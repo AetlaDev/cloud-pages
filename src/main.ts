@@ -255,7 +255,7 @@ function setMenu(open: boolean) {
   if (!sideMenu) return;
   sideMenu.dataset.open = open ? 'true' : 'false';
   hamburger && (hamburger.dataset.open = open ? 'true' : 'false');
-  hamburger && hamburger.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+  hamburger && hamburger.setAttribute('aria-label', open ? '关闭菜单' : '打开菜单');
   body.dataset.modal = open ? 'true' : 'false';
   if (lenis) open ? lenis.stop() : lenis.start();
 }
