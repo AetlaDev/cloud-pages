@@ -28,20 +28,100 @@ function scrollTo(target) {
 
 
 const sectionEls = [...document.querySelectorAll<HTMLElement>('.SectionContainer__container[data-top_section]')];
-const worksItems = [...document.querySelectorAll<HTMLElement>('[data-works_item]')];
-const workScrollItems = [...document.querySelectorAll<HTMLElement>('[data-top_works_item]')];
+let worksItems: HTMLElement[] = [];
+let workScrollItems: HTMLElement[] = [];
 const markers = [...document.querySelectorAll<HTMLElement>('.MissionVision__marker')];
 const missionContainer = document.querySelector<HTMLElement>('[data-mission-container]');
 const missionTitle = document.querySelector<HTMLElement>('[data-mission-title]');
 const indicatorItems = [...document.querySelectorAll<HTMLElement>('.TopScrollIndicator__section_item')];
 
-const works = workScrollItems.map((el) => ({ el, image: el.dataset.top_works_item }));
+let works: { el: Element; image: string }[] = [];
 
+const titleSplits = new Map();
 
-workScrollItems.forEach((el) => {
-  const thumb = el.querySelector<HTMLElement>('.Works__scroll_item_thumb');
-  if (thumb) thumb.style.backgroundImage = `url("${el.dataset.top_works_item}")`;
-});
+// 从 JSON 配置读取项目列表并动态生成 Project（works）区块
+type ProjectConfig = {
+  id?: string;
+  name?: string;
+  description?: string;
+  link?: string;
+  image?: string;
+};
+
+const escapeHtml = (s: string) =>
+  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] || c));
+
+function makeEl<K extends keyof HTMLElementTagNameMap>(tag: K, cls: string, html?: string) {
+  const n = document.createElement(tag);
+  n.className = cls;
+  if (html !== undefined) n.innerHTML = html;
+  return n;
+}
+
+async function loadProjects(): Promise<ProjectConfig[]> {
+  try {
+    const res = await fetch(A('data/projects.json'), { cache: 'no-cache' });
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('projects.json 顶层必须是数组');
+    return data.filter((it) => it && typeof it === 'object' && it.name);
+  } catch (e) {
+    console.warn('[aetla] projects.json 加载失败，保留内置项目数据', e);
+    return [];
+  }
+}
+
+function renderProjects(items: ProjectConfig[]) {
+  const listEl = document.querySelector<HTMLElement>('.Works__list');
+  const scrollEl = document.querySelector<HTMLElement>('.Works__scroll');
+  if (!listEl || !scrollEl || !items.length) return;
+
+  listEl.innerHTML = '';
+  scrollEl.innerHTML = '';
+
+  items.forEach((p, i) => {
+    const item = makeEl('div', 'Works__item');
+    item.setAttribute('data-works_item', '');
+
+    const title = makeEl('h3', 'Works__item_title');
+    title.setAttribute('data-works_title', '');
+    const link = makeEl('a', 'Works__item_title_link', escapeHtml(p.name || `Project ${i + 1}`));
+    const href = p.link || '#project';
+    link.href = href;
+    // 外部链接（http/https）在新标签页打开
+    if (/^https?:\/\//i.test(href)) {
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    }
+    title.appendChild(link);
+    item.appendChild(title);
+
+    if (p.description) item.appendChild(makeEl('p', 'Works__item_desc', escapeHtml(p.description)));
+    listEl.appendChild(item);
+
+    const scrollItem = makeEl('div', 'Works__scroll_item');
+    scrollItem.setAttribute('data-top_works_item', p.image || '');
+    scrollItem.setAttribute('data-works_id', p.id || String(i + 1));
+    scrollItem.appendChild(makeEl('div', 'Works__scroll_item_thumb'));
+    scrollEl.appendChild(scrollItem);
+  });
+}
+
+function refreshWorksDom() {
+  worksItems = [...document.querySelectorAll<HTMLElement>('[data-works_item]')];
+  workScrollItems = [...document.querySelectorAll<HTMLElement>('[data-top_works_item]')];
+  works = workScrollItems.map((el) => ({ el, image: el.dataset.top_works_item || '' }));
+
+  workScrollItems.forEach((el) => {
+    const thumb = el.querySelector<HTMLElement>('.Works__scroll_item_thumb');
+    if (thumb) thumb.style.backgroundImage = `url("${el.dataset.top_works_item}")`;
+  });
+
+  titleSplits.clear();
+  worksItems.forEach((el) => {
+    const t = el.querySelector('[data-works_title]');
+    if (t) titleSplits.set(el, splitChars(t).chars);
+  });
+}
 
 type SectionGeo = { name: string; top: number; height: number };
 let geo: SectionGeo[] = [];
@@ -64,12 +144,6 @@ const progressOf = (n) => {
 };
 
 
-
-const titleSplits = new Map();
-worksItems.forEach((el) => {
-  const t = el.querySelector('[data-works_title]');
-  if (t) titleSplits.set(el, splitChars(t).chars);
-});
 
 let currentWorksIndex = -1;
 function updateWorks(u) {
@@ -416,38 +490,47 @@ async function startLoading() {
 }
 
 
-measure();
-window.addEventListener('load', measure);
+async function boot() {
+  // 从 JSON 配置动态生成 Project 页面内容
+  const projects = await loadProjects();
+  renderProjects(projects);
+  refreshWorksDom();
+
+  measure();
+  window.addEventListener('load', measure);
 
 
-import('./gl')
-  .then(({ initGL }) => initGL({ container: glCanvas, works }))
-  .then((instance) => {
-    gl = instance;
-    if (gl) {
-      gl.resize(window.innerWidth, window.innerHeight);
-      window.addEventListener('pointermove', (e) => {
-        gl.setPointer((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
-      });
-    } else {
+  import('./gl')
+    .then(({ initGL }) => initGL({ container: glCanvas, works }))
+    .then((instance) => {
+      gl = instance;
+      if (gl) {
+        gl.resize(window.innerWidth, window.innerHeight);
+        window.addEventListener('pointermove', (e) => {
+          gl.setPointer((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+        });
+      } else {
+        document.documentElement.dataset.glFallback = 'true';
+      }
+      measure();
+      if (loadingFinished) startIntro();
+      glReadyResolve();
+    })
+    .catch((e) => {
+      console.warn('[aetla] GL 初始化失败，降级为 DOM 背景', e);
       document.documentElement.dataset.glFallback = 'true';
-    }
-    measure();
-    if (loadingFinished) startIntro();
-    glReadyResolve();
-  })
-  .catch((e) => {
-    console.warn('[aetla] GL 初始化失败，降级为 DOM 背景', e);
-    document.documentElement.dataset.glFallback = 'true';
-    glReadyResolve();
-  })
-  .finally(() => {
+      glReadyResolve();
+    })
+    .finally(() => {
 
-    glReadyResolve();
+      glReadyResolve();
+    });
+
+  startLoading();
+  requestAnimationFrame((t) => {
+    last = t;
+    frame(t);
   });
+}
 
-startLoading();
-requestAnimationFrame((t) => {
-  last = t;
-  frame(t);
-});
+boot();

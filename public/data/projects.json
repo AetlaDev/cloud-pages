@@ -1,0 +1,38 @@
+[
+  {
+    "name": "测试项目#1",
+    "description": "测试项目#1 网站施工中...",
+    "link": "#project/detail/测试#1占位链接",
+    "image": "./projects/01M0P0WHRCZVQ51VE2MY08YG93-w800.avif"
+  },
+  {
+    "name": "测试项目#2",
+    "description": "测试项目#2 网站完善中...",
+    "link": "#project/detail/测试#2占位链接",
+    "image": "./projects/01M0P0Q7Y0JJVK0QJC1DEKFCYW-w800.png"
+  },
+  {
+    "name": "测试项目#3",
+    "description": "测试项目#3 网站demo预览",
+    "link": "#project/detail/测试#3占位链接",
+    "image": "./projects/01M0P0WHRCZVQ51VE2MY08YG93-w800.avif"
+  },
+  {
+    "name": "测试项目#4",
+    "description": "测试项目#4 TEST ",
+    "link": "#project/detail/测试#4占位链接",
+    "image": "./projects/01M0P0WHRCZVQ51VE2MY08YG93-w800.avif"
+  },
+  {
+    "name": "测试项目#5",
+    "description": "测试项目#5 网站持续构建中",
+    "link": "#project/detail/测试#5占位链接",
+    "image": "./projects/01M0P0Q7Y0JJVK0QJC1DEKFCYW-w800.png"
+  },
+  {
+    "name": "测试项目#6",
+    "description": "测试项目#6 KSKBL",
+    "link": "#project/detail/测试#6占位链接",
+    "image": "./projects/01M0P0WHRCZVQ51VE2MY08YG93-w800.avif"
+  }
+]
