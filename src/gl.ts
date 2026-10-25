@@ -902,6 +902,7 @@ export async function initGL({ container, works }: { container: HTMLElement | nu
   const st = {
     time: 0, kvZoom: 1, mouse: new THREE.Vector2(), mouseOffset: new THREE.Vector2(),
     lastY: 0, vel: 0, scrollPixVel: 0, logoVis: 1, thumbVis: 0, titleVis: 0, titleProg: 0, logo2DVis: 0,
+    authW: 0,
     pointer: new THREE.Vector2(), pointerPrev: new THREE.Vector2(), pointerVec: new THREE.Vector2(),
     uvTimer: 0, blackTimer: 0, patternTimer: 0, patternFade: 0, patternFadeDur: 0.3,
     patternFrom: 0, geoSwap: 0,
@@ -1008,6 +1009,18 @@ export async function initGL({ container, works }: { container: HTMLElement | nu
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
 
+    // 登录/注册覆盖层：logo 大文字与 3D 模型缩小并移到左侧 2/3 区域的中心（authW 由 s.auth 阻尼过渡）
+    st.authW = damp(st.authW, s.auth ? 1 : 0, 3.5, dt);
+    {
+      const tanH = Math.tan((camera.fov / 2) * (Math.PI / 180));
+      const halfW0 = tanH * camera.position.z * s.aspect; // z=0 处可见半宽
+      const halfW2 = tanH * (camera.position.z - logo2D.position.z) * s.aspect; // logo2D 所在深度处可见半宽
+      logoGroup.position.x = (-halfW0 / 3) * st.authW;
+      logoGroup.scale.setScalar(4.3 * (1 - 0.4 * st.authW));
+      logo2D.position.x = (-halfW2 / 3) * st.authW;
+      logo2D.scale.setScalar((0.55 * spWeight + 1 - spWeight) * (1 - 0.4 * st.authW));
+    }
+
     const woP = st.lerper.set('worksOutro_progress', clamp(s.worksOutroProgress), 1);
     if (woP > 0.001) {
       const a = camera.projectionMatrix.elements;
@@ -1065,7 +1078,9 @@ export async function initGL({ container, works }: { container: HTMLElement | nu
       logoMesh.quaternion.premultiply(st.mouseQua);
       logoMesh.quaternion.premultiply(st.spinQua);
       logoMesh.quaternion.slerp(QUAT_IDENTITY, dt * cfg.returnToOriginForce * (1 - st.worksRotate * 0.8));
-      logoMesh.updateMatrixWorld();
+      // 先更新 logoGroup（position/scale 每帧可能变化），否则 outline 容器会滞后一帧，
+      // 其 alpha=0 但写深度的 base/side 网格会在旧位置遮挡 logoMesh，导致移动时面片闪烁
+      logoGroup.updateMatrixWorld(true);
       logoOutlineContainer.matrixWorld.copy(logoMesh.matrixWorld);
     }
 

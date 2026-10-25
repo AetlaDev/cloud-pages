@@ -1,0 +1,275 @@
+﻿.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.auth-overlay .auth-panel {
+  pointer-events: auto;
+  width: 33.3333%;
+  min-width: 360px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+  font-family: Roboto, 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  background: rgba(255, 255, 255, 0.75);
+  background: color-mix(in srgb, var(--md-sys-color-surface, #fef7ff) 75%, transparent);
+  color: var(--md-sys-color-on-surface, #1d1b20);
+  backdrop-filter: blur(10px) saturate(1.5);
+  -webkit-backdrop-filter: blur(10px) saturate(1.5);
+  box-shadow: -1px 0 0 color-mix(in srgb, var(--md-sys-color-outline-variant, #cac4d0) 60%, transparent);
+  transform: translateX(103%);
+  transition: transform 0.9s cubic-bezier(0.2, 1.25, 0.3, 1);
+  will-change: transform;
+}
+
+body[data-auth-ready] .auth-overlay .auth-panel {
+  transform: translateX(0);
+}
+
+.auth-overlay .auth-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-overlay .auth-header {
+  padding: 20px 32px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auth-overlay .auth-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-overlay .auth-logo-icon {
+  width: 26px;
+  height: 23px;
+  color: var(--md-sys-color-primary, #6750a4);
+  flex: none;
+}
+
+.auth-overlay .auth-header m3e-heading {
+  margin: 0;
+}
+
+.auth-overlay .auth-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+}
+
+.auth-overlay .auth-content {
+  padding: 12px 32px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-overlay .auth-content m3e-form-field {
+  --m3e-form-field-width: 100%;
+  width: 100%;
+}
+
+.auth-overlay .auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 32px 20px;
+}
+
+.auth-overlay .auth-submit {
+  width: 100%;
+}
+
+.auth-overlay .auth-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+}
+
+.auth-overlay .auth-footer a {
+  color: var(--md-sys-color-primary, #6750a4);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-overlay .auth-footer a:hover {
+  text-decoration: underline;
+}
+
+.auth-overlay .auth-content input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-overlay .auth-prefix {
+  display: inline-flex;
+  align-items: center;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  transition: color 0.25s ease;
+}
+
+.auth-overlay .auth-prefix svg {
+  width: 20px;
+  height: 20px;
+}
+
+.auth-overlay m3e-form-field:focus-within .auth-prefix {
+  color: var(--md-sys-color-primary, #6750a4);
+}
+
+.auth-overlay m3e-form-field[data-invalid] .auth-prefix {
+  color: var(--md-sys-color-error, #b3261e);
+}
+
+.auth-eye {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.auth-eye:hover {
+  background-color: color-mix(in srgb, var(--md-sys-color-on-surface, #1d1b20) 8%, transparent);
+  color: var(--md-sys-color-primary, #6750a4);
+}
+
+.auth-eye:active {
+  transform: scale(0.9);
+}
+
+.auth-eye svg {
+  width: 20px;
+  height: 20px;
+}
+
+.auth-eye svg:last-child {
+  display: none;
+}
+
+.auth-eye[data-on] svg:first-child {
+  display: none;
+}
+
+.auth-eye[data-on] svg:last-child {
+  display: block;
+}
+
+.auth-overlay m3e-form-field[data-invalid] {
+  animation: auth-shake 0.28s ease;
+}
+
+@keyframes auth-shake {
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
+.auth-overlay .auth-header,
+.auth-overlay .auth-content m3e-form-field,
+.auth-overlay .auth-actions > * {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+@keyframes auth-rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+body[data-auth-ready] .auth-overlay .auth-header {
+  animation: auth-rise 0.65s cubic-bezier(0.2, 1.1, 0.3, 1) 0.15s forwards;
+}
+
+body[data-auth-ready] .auth-overlay .auth-content m3e-form-field:nth-of-type(1) {
+  animation: auth-rise 0.65s cubic-bezier(0.2, 1.1, 0.3, 1) 0.25s forwards;
+}
+
+body[data-auth-ready] .auth-overlay .auth-content m3e-form-field:nth-of-type(2) {
+  animation: auth-rise 0.65s cubic-bezier(0.2, 1.1, 0.3, 1) 0.32s forwards;
+}
+
+body[data-auth-ready] .auth-overlay .auth-content m3e-form-field:nth-of-type(3) {
+  animation: auth-rise 0.65s cubic-bezier(0.2, 1.1, 0.3, 1) 0.39s forwards;
+}
+
+body[data-auth-ready] .auth-overlay .auth-content m3e-form-field:nth-of-type(4) {
+  animation: auth-rise 0.65s cubic-bezier(0.2, 1.1, 0.3, 1) 0.46s forwards;
+}
+
+body[data-auth-ready] .auth-overlay .auth-submit {
+  animation: auth-rise 0.65s cubic-bezier(0.2, 1.1, 0.3, 1) 0.54s forwards;
+}
+
+body[data-auth-ready] .auth-overlay .auth-footer {
+  animation: auth-rise 0.65s cubic-bezier(0.2, 1.1, 0.3, 1) 0.62s forwards;
+}
+
+.auth-overlay .auth-submit {
+  transition: filter 0.2s ease;
+}
+
+.auth-overlay .auth-submit:hover {
+  filter: brightness(1.07);
+}
+
+.auth-overlay .auth-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.auth-overlay .auth-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.auth-overlay .auth-footer a:hover .auth-arrow {
+  transform: translateX(3px);
+}
+
+m3e-snackbar {
+  --m3e-snackbar-margin: 96px;
+}
+
+body[data-auth] .Header__nav,
+body[data-auth] .HamburgerIcon__hamburger,
+body[data-auth] [data-hamburger],
+body[data-auth] .TopScrollIndicator__top_scroll_indicator {
+  display: none !important;
+}
+
+@media (max-width: 860px) {
+  .auth-overlay .auth-panel {
+    width: 100%;
+    min-width: 0;
+  }
+}

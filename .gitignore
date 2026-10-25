@@ -43,6 +43,9 @@ dist-ssr
 .wrangler-out
 .dev.vars
 
+# Backend API (Cloudflare Worker) — 禁止上传
+cloudflare
+
 # Independent sub-projects (not part of the root blog site)
 endfield
 mmd-toon-test

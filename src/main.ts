@@ -305,6 +305,8 @@ function frame(now: number) {
       missionProgress: missionReveal,
       worksOutroProgress,
       titleProgress: pIntro,
+      // /login、/register：入场动画播完后面板滑入，同时 logo 缩小并移到左侧 2/3 区域
+      auth: body.dataset.authReady === 'true' && window.innerWidth > 860 ? 1 : 0,
     };
     aetlaState = glState;
     gl.update(dt, glState);
@@ -479,6 +481,12 @@ async function startLoading() {
   }
   startIntro();
 
+  // 入场动画（logo + 着色器揭示）约 3s，播完后通知 auth 覆盖层滑入
+  setTimeout(() => {
+    body.dataset.introDone = 'true';
+    window.dispatchEvent(new Event('aetla:intro-done'));
+  }, 3000);
+
 
   setTimeout(() => {
     body.dataset.gl_loading_end = 'true';
@@ -534,3 +542,11 @@ async function boot() {
 }
 
 boot();
+
+// /login、/register：在主站点场景之上挂载账号面板覆盖层
+const authMatch = location.pathname.match(/^\/(login|register)\/?$/);
+if (authMatch) {
+  import('./auth/overlay')
+    .then((m) => m.mountAuthOverlay(authMatch[1] as 'login' | 'register'))
+    .catch(() => {});
+}
