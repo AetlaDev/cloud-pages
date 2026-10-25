@@ -6,7 +6,6 @@
 [data-page=top][data-gl_loading_end=false] .Layout__inner{opacity:0}
 .Layout__gl{position:absolute;width:100%;height:100%;left:0;top:0}
 .Layout__gl_inner{position:fixed;width:100%;height:100lvh;left:0;top:0}
-[data-page=top] .Layout__gl_inner{position:sticky}
 .Layout__main{position:relative}
 .GLCanvas__container{position:relative;width:100%;height:100%}
 .GLCanvas__container canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important}
