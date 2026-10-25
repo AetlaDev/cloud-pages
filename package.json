@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "check": "tsc --noEmit && tsc -p cloudflare/tsconfig.json",
     "db:init": "wrangler d1 execute aetla-users -c cloudflare/wrangler.jsonc --local --file=cloudflare/schema.sql",
-    "deploy": "npm run build && wrangler deploy -c cloudflare/wrangler.jsonc"
+    "deploy": "wrangler deploy -c cloudflare/wrangler.jsonc"
   },
   "dependencies": {
     "@m3e/web": "^2.10.2",
