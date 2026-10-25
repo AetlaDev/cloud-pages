@@ -60,7 +60,7 @@ export function mountAuthOverlay(mode: AuthMode): void {
   const isLogin = mode === 'login';
   const host = document.createElement('div');
   host.innerHTML = `
-  <m3e-theme color="#6750A4" scheme="auto">
+  <m3e-theme color="#6750A4" scheme="dark">
     <div class="auth-overlay">
       <main class="auth-panel">
         <div class="auth-card">

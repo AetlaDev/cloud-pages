@@ -1,4 +1,4 @@
-﻿.auth-overlay {
+.auth-overlay {
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -18,12 +18,12 @@
   justify-content: center;
   overflow-y: auto;
   font-family: Roboto, 'Noto Sans SC', system-ui, -apple-system, sans-serif;
-  background: rgba(255, 255, 255, 0.75);
-  background: color-mix(in srgb, var(--md-sys-color-surface, #fef7ff) 75%, transparent);
-  color: var(--md-sys-color-on-surface, #1d1b20);
+  background: rgba(20, 18, 24, 0.75);
+  background: color-mix(in srgb, var(--md-sys-color-surface, #141218) 75%, transparent);
+  color: var(--md-sys-color-on-surface, #e6e0e9);
   backdrop-filter: blur(10px) saturate(1.5);
   -webkit-backdrop-filter: blur(10px) saturate(1.5);
-  box-shadow: -1px 0 0 color-mix(in srgb, var(--md-sys-color-outline-variant, #cac4d0) 60%, transparent);
+  box-shadow: -1px 0 0 color-mix(in srgb, var(--md-sys-color-outline-variant, #49454f) 60%, transparent);
   transform: translateX(103%);
   transition: transform 0.9s cubic-bezier(0.2, 1.25, 0.3, 1);
   will-change: transform;
@@ -54,7 +54,7 @@ body[data-auth-ready] .auth-overlay .auth-panel {
 .auth-overlay .auth-logo-icon {
   width: 26px;
   height: 23px;
-  color: var(--md-sys-color-primary, #6750a4);
+  color: var(--md-sys-color-primary, #d0bcff);
   flex: none;
 }
 
@@ -65,7 +65,7 @@ body[data-auth-ready] .auth-overlay .auth-panel {
 .auth-overlay .auth-subtitle {
   margin: 0;
   font-size: 14px;
-  color: var(--md-sys-color-on-surface-variant, #49454f);
+  color: var(--md-sys-color-on-surface-variant, #cac4d0);
 }
 
 .auth-overlay .auth-content {
@@ -97,11 +97,11 @@ body[data-auth-ready] .auth-overlay .auth-panel {
   align-items: center;
   gap: 4px;
   font-size: 14px;
-  color: var(--md-sys-color-on-surface-variant, #49454f);
+  color: var(--md-sys-color-on-surface-variant, #cac4d0);
 }
 
 .auth-overlay .auth-footer a {
-  color: var(--md-sys-color-primary, #6750a4);
+  color: var(--md-sys-color-primary, #d0bcff);
   text-decoration: none;
   font-weight: 500;
 }
@@ -118,7 +118,7 @@ body[data-auth-ready] .auth-overlay .auth-panel {
 .auth-overlay .auth-prefix {
   display: inline-flex;
   align-items: center;
-  color: var(--md-sys-color-on-surface-variant, #49454f);
+  color: var(--md-sys-color-on-surface-variant, #cac4d0);
   transition: color 0.25s ease;
 }
 
@@ -128,11 +128,11 @@ body[data-auth-ready] .auth-overlay .auth-panel {
 }
 
 .auth-overlay m3e-form-field:focus-within .auth-prefix {
-  color: var(--md-sys-color-primary, #6750a4);
+  color: var(--md-sys-color-primary, #d0bcff);
 }
 
 .auth-overlay m3e-form-field[data-invalid] .auth-prefix {
-  color: var(--md-sys-color-error, #b3261e);
+  color: var(--md-sys-color-error, #f2b8b5);
 }
 
 .auth-eye {
@@ -144,13 +144,13 @@ body[data-auth-ready] .auth-overlay .auth-panel {
   height: 36px;
   border-radius: 50%;
   cursor: pointer;
-  color: var(--md-sys-color-on-surface-variant, #49454f);
+  color: var(--md-sys-color-on-surface-variant, #cac4d0);
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
 .auth-eye:hover {
-  background-color: color-mix(in srgb, var(--md-sys-color-on-surface, #1d1b20) 8%, transparent);
-  color: var(--md-sys-color-primary, #6750a4);
+  background-color: color-mix(in srgb, var(--md-sys-color-on-surface, #e6e0e9) 8%, transparent);
+  color: var(--md-sys-color-primary, #d0bcff);
 }
 
 .auth-eye:active {
