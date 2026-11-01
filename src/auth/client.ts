@@ -1,7 +1,7 @@
 import { API_BASE } from './config';
 
 interface ApiError {
-  ok?: false;
+  code?: number;
   error?: string;
   message?: string;
 }
@@ -119,7 +119,9 @@ export async function aetlaApi<T = Record<string, unknown>>(path: string, payloa
   }
 
   const data = (await res.json().catch(() => ({ message: '服务器响应异常' }))) as ApiError & Record<string, unknown>;
-  if (!res.ok || data.ok === false) throw data;
+  // 后端统一在响应体里返回 code（200/201 成功，4xx/5xx 失败），同时仍以 HTTP 状态码作为兜底
+  const code = data.code ?? res.status;
+  if (!res.ok || code >= 400) throw { ...data, code } satisfies ApiError;
   return data as T;
 }
 

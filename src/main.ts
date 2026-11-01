@@ -434,6 +434,45 @@ function playLottie(id: string, path: string, loop = false) {
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(() => r(), ms));
 
+// 等待 window load（页面内所有图片、样式、脚本及模块脚本都传输完成）
+const waitLoad = () =>
+  document.readyState === 'complete'
+    ? Promise.resolve()
+    : new Promise<void>((r) => window.addEventListener('load', () => r(), { once: true }));
+
+// 预加载图片：无论成功失败都 resolve，避免单张图 404 卡住加载流程
+const preloadImage = (src: string) =>
+  new Promise<void>((resolve) => {
+    if (!src) return resolve();
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve();
+    img.src = src;
+  });
+
+// 等待音频可连续播放（即文件已完整传输），出错也放行
+function preloadAudio(el: HTMLAudioElement) {
+  return new Promise<void>((resolve) => {
+    if (el.readyState >= 3) return resolve();
+    const done = () => resolve();
+    el.addEventListener('canplaythrough', done, { once: true });
+    el.addEventListener('error', done, { once: true });
+    el.preload = 'auto';
+    el.load();
+  });
+}
+
+// 加载层期间需要完整传输的静态资源（GL 贴图 + 环境贴图 + 加载图形）
+const STATIC_ASSETS = [
+  ...['px', 'nx', 'py', 'ny', 'pz', 'nz'].map((n) => A(`envmap/${n}.png`)),
+  A('img/logo.png'),
+  A('img/works-title.png'),
+  A('common/loading.svg'),
+];
+
+// 资源等待的兜底上限，防止个别资源异常导致加载层永不结束
+const RESOURCE_TIMEOUT = 20000;
+
 
 let glReadyResolve: () => void = () => {};
 const glReady = new Promise<void>((r) => { glReadyResolve = r; });
@@ -449,7 +488,8 @@ function startIntro() {
 }
 
 async function startLoading() {
-  const bgAnim = playLottie('loading-lottie', 'loading-bg.json', false);
+  // 背景动画循环播放：只要资源还没传输完，加载动画就持续进行
+  const bgAnim = playLottie('loading-lottie', 'loading-bg.json', true);
   const logoTimeline = setTimeout(() => {
     playLottie('loading-logo', 'loading-logo.json', false);
   }, 400);
@@ -457,22 +497,29 @@ async function startLoading() {
   const minDuration = 2600;
   const t0 = performance.now();
 
-
-  const animDone = bgAnim
-    ? new Promise<void>((r) => bgAnim.addEventListener('complete', () => r()))
-    : wait(minDuration);
-  await Promise.race([animDone, wait(6000)]);
-  clearTimeout(logoTimeline);
-
-
-  await Promise.race([glReady, wait(8000)]);
-
+  // 等页面 load、字体、GL 场景（模型/贴图）、环境贴图、项目图片、音频全部传输完成
+  const resources = Promise.all([
+    waitLoad(),
+    document.fonts ? document.fonts.ready : Promise.resolve(),
+    glReady,
+    preloadAudio(bgm),
+    ...STATIC_ASSETS.map(preloadImage),
+    ...works.map((w) => preloadImage(w.image)),
+  ]);
+  await Promise.race([resources, wait(RESOURCE_TIMEOUT)]);
 
   await wait(Math.max(0, minDuration - (performance.now() - t0)));
+  clearTimeout(logoTimeline);
 
 
   if (loadingFinished) return;
   loadingFinished = true;
+
+  // 资源已全部传输完成，结束加载动画并收起加载层
+  if (bgAnim) {
+    bgAnim.pause();
+    bgAnim.destroy();
+  }
 
 
   if (loadingOverlay) {
@@ -549,4 +596,27 @@ if (authMatch) {
   import('./auth/overlay')
     .then((m) => m.mountAuthOverlay(authMatch[1] as 'login' | 'register'))
     .catch(() => {});
+}
+
+// 根路径：汉堡菜单左侧显示当前登录用户昵称，未登录时显示「登录」
+const accountEl = document.querySelector<HTMLElement>('[data-account]');
+const isRootPath = location.pathname === '/' || location.pathname === '/index.html';
+if (accountEl) {
+  if (!isRootPath) {
+    accountEl.remove();
+  } else {
+    accountEl.hidden = false;
+    // token 只在后端读取（HttpOnly Cookie），前端仅通过 /profile 拿到昵称
+    import('./auth/client')
+      .then(({ aetlaApi }) => aetlaApi<{ username?: string }>('/profile', {}))
+      .then((me) => {
+        const name = (me.username || '').trim();
+        if (!name) return;
+        accountEl.textContent = name;
+        accountEl.removeAttribute('href');
+        accountEl.removeAttribute('aria-label');
+        accountEl.dataset.logged_in = 'true';
+      })
+      .catch(() => {});
+  }
 }

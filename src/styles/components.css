@@ -52,6 +52,13 @@
 .SideMenu__menu_item a span{display:block}
 
 .SideMenu__hamburger{position:absolute;right:10px;top:27px}
+.SideMenu__account{position:absolute;right:52px;top:27px;max-width:min(40vw,200px);height:30px;line-height:30px;text-align:right;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.06em;color:#fff;opacity:.8;pointer-events:auto;z-index:1001;transition:opacity .3s ease,color .5s ease}
+.SideMenu__account[hidden]{display:none}
+.SideMenu__account:hover{opacity:1}
+.SideMenu__account[data-logged_in=true]{cursor:default}
+[data-open=true] .SideMenu__account{opacity:0;pointer-events:none}
+[data-page=top][data-gl_loading_end=false] .SideMenu__account{opacity:0}
+[data-current_section=mission] .SideMenu__account,[data-current_section=vision] .SideMenu__account,[data-current_section=vision_out] .SideMenu__account{color:#000}
 .SoundToggle__button{position:relative;display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:8px;background:transparent;border-radius:999px;color:inherit;cursor:pointer;pointer-events:auto;transition:background-color .3s cubic-bezier(.25,.46,.45,.94),border-color .3s cubic-bezier(.25,.46,.45,.94),transform .3s cubic-bezier(.25,.46,.45,.94)}
 .SoundToggle__button:hover{background-color:#ffffff1a;border-color:#fffc;transform:scale(1.05)}
 [data-current_section=mission] .SoundToggle__button,[data-current_section=vision] .SoundToggle__button,[data-current_section=vision_out] .SoundToggle__button,[data-current_section=footer] .SoundToggle__button{border-color:#00000080;color:#000}

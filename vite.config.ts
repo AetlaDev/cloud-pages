@@ -30,7 +30,7 @@ export default defineConfig({
   plugins: [mpaRoutes()],
   server: {
     open: true,
-    // 本地：API（POST /login、/register、/server-key）转发给 wrangler dev（8787），Cookie 仍是同源
+    // 本地：API（POST /login、/register、/me、GET /server-key）转发给 wrangler dev（8787），Cookie 仍是同源
     proxy: {
       '/server-key': { target: 'http://127.0.0.1:8787', changeOrigin: true },
       '/login': {
@@ -39,6 +39,11 @@ export default defineConfig({
         bypass: (req) => (req.method === 'GET' ? req.url : undefined),
       },
       '/register': {
+        target: 'http://127.0.0.1:8787',
+        changeOrigin: true,
+        bypass: (req) => (req.method === 'GET' ? req.url : undefined),
+      },
+      '/profile': {
         target: 'http://127.0.0.1:8787',
         changeOrigin: true,
         bypass: (req) => (req.method === 'GET' ? req.url : undefined),
